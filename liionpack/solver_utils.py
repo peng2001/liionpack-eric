@@ -102,7 +102,7 @@ def _serial_step(model, solutions, inputs_dict, integrator, variables, t_eval, e
         # Call the integrator once, with the grid
         casadi_sol = integrator(x0=x0, z0=z0, p=inputs)
         xf = casadi.horzcat(x0, casadi_sol["xf"])
-        zf = casadi_sol["zf"]
+        zf = casadi.horzcat(z0, casadi_sol["zf"])
         if zf.is_empty():
             y_sol = xf
         else:
@@ -227,7 +227,7 @@ def _mapped_step(model, solutions, inputs_dict, integrator, variables, t_eval, e
         if zf.is_empty():
             y_sol = y_diff
         else:
-            y_alg = zf[:, start : start + nt]
+            y_alg = casadi.horzcat(z0[:, i], zf[:, start : start + nt])
             y_sol = casadi.vertcat(y_diff, y_alg)
         xend.append(y_sol[:, -1])
         # Not sure how to index into zf - need an example

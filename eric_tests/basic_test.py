@@ -9,22 +9,22 @@ import os
 
 lp.set_logging_level("NOTICE")
 
-# def custom_dfn_thermal_simulation(parameter_values=None):
-#     model = pybamm.lithium_ion.DFN(  # Use DFN instead of SPMe
-#         options={"thermal": "x-full"}
-#     )
-#     model = lp.add_events_to_model(model)
+def custom_dfn_thermal_simulation(parameter_values=None):
+    model = pybamm.lithium_ion.SPMe(  # Use DFN instead of SPMe
+        options={"thermal": "lumped"}
+    )
+    model = lp.add_events_to_model(model)
     
-#     if parameter_values is None:
-#         parameter_values = pybamm.ParameterValues("Chen2020")
+    if parameter_values is None:
+        parameter_values = pybamm.ParameterValues("Chen2020")
     
-#     parameter_values.update({
-#         "Total heat transfer coefficient [W.m-2.K-1]": "[input]",
-#     })
+    parameter_values.update({
+        "Total heat transfer coefficient [W.m-2.K-1]": "[input]",
+    })
     
-#     solver = pybamm.CasadiSolver(mode="safe")
-#     sim = pybamm.Simulation(model=model, parameter_values=parameter_values, solver=solver)
-#     return sim
+    solver = pybamm.CasadiSolver(mode="safe")
+    sim = pybamm.Simulation(model=model, parameter_values=parameter_values, solver=solver)
+    return sim
 
 
 
@@ -68,7 +68,8 @@ inputs = {"Total heat transfer coefficient [W.m-2.K-1]": np.ones(Np * Ns) * 10}
 # Solve the pack
 output = lp.solve(
     netlist=netlist,
-    sim_func=lp.thermal_simulation,
+    sim_func=custom_dfn_thermal_simulation,
+    # sim_func=lp.thermal_simulation,
     parameter_values=parameter_values,
     experiment=experiment,
     output_variables=output_variables,
